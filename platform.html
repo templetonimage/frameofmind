@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <title>Frame of Mind Club — Members</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon.svg" />
-  <link rel="apple-touch-icon" href="favicon.svg" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
   <meta name="theme-color" content="#FAFAF8" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -684,7 +683,7 @@
 <!-- AUTH GATE -->
 <div id="auth-gate">
   <div class="auth-gate-card">
-    <div class="gate-logo">Templeton <span class="gold">Book Club</span></div>
+    <div class="gate-logo"><strong>Frame of Mind</strong> <span class="gold">Book Club</span></div>
     <div class="gate-sub">Members Only</div>
 
     <!-- Login view -->
@@ -730,7 +729,7 @@
 <!-- APP -->
 <div id="app">
   <nav class="topnav">
-    <a class="topnav-logo" href="https://frameofmindclub.com" onclick="sessionStorage.setItem(&apos;skipPlatformRedirect&apos;,&apos;true&apos;)">Templeton <span class="gold">Book Club</span></a>
+    <a class="topnav-logo" href="https://frameofmindclub.com" onclick="sessionStorage.setItem(&apos;skipPlatformRedirect&apos;,&apos;true&apos;)"><strong>Frame of Mind</strong> <span class="gold">Book Club</span></a>
     <div class="topnav-right">
       <span class="topnav-points" id="topnav-points"></span>
       <div class="topnav-avatar" id="topnav-avatar" onclick="navTo('profile')">—</div>
@@ -778,7 +777,7 @@
         <textarea class="compose-textarea" id="compose-text" placeholder="Share a thought about this month's book…" rows="2"></textarea>
         <input class="passage-ref-input" id="passage-ref" type="text" placeholder="Page or chapter reference (e.g. p. 47)" style="display:none;" />
         <div class="compose-footer">
-          <span class="compose-hint" id="compose-hint">+2 pts for posting</span>
+          <span class="compose-hint" id="compose-hint">+1 pts for posting</span>
           <button class="btn-post" onclick="submitPost()">Post</button>
         </div>
       </div>
@@ -869,6 +868,13 @@
               <input class="admin-input" type="number" id="a-book-pages" placeholder="e.g. 320" />
               <label class="admin-label">Meeting Date &amp; Time</label>
               <input class="admin-input" type="datetime-local" id="a-meeting-date" />
+              <label class="admin-label">Meeting Timezone</label>
+              <select class="admin-input" id="a-meeting-timezone">
+                <option value="ET">ET — Eastern Time</option>
+                <option value="CT">CT — Central Time</option>
+                <option value="MT">MT — Mountain Time</option>
+                <option value="PT">PT — Pacific Time</option>
+              </select>
               <label class="admin-label">Zoom Link</label>
               <input class="admin-input" id="a-zoom-link" placeholder="https://zoom.us/j/…" />
               <label class="admin-label">Recording URL (after meeting)</label>
@@ -876,6 +882,7 @@
               <label class="admin-label">Discussion Questions (one per line)</label>
               <textarea class="admin-textarea" id="a-discussion-questions" placeholder="What surprised you most?&#10;How does this apply to your work?"></textarea>
               <button class="btn-admin-gold" onclick="adminSetBook()" style="width:100%;margin-bottom:6px;">Set Current Book</button>
+              <button class="btn-admin-gold" onclick="adminUpdateBook()" style="width:100%;margin-bottom:6px;background:#555;">Update Current Book (no archive)</button>
 
               <div class="admin-section">
                 <div class="admin-col-title">Monthly Recap</div>
@@ -887,7 +894,7 @@
               </div>
 
               <div class="admin-section">
-                <div class="admin-col-title">Mark Attended (+10 pts)</div>
+                <div class="admin-col-title">Mark Attended (+5 pts)</div>
                 <div id="admin-member-list" style="max-height:200px;overflow-y:auto;"></div>
               </div>
             </div>
@@ -986,10 +993,10 @@
             <span style="color:var(--text2);">Passage liked by someone</span><span style="font-family:var(--font-mono);font-size:11px;">+1 per like</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);">
-            <span style="color:var(--text2);">RSVP to meeting</span><span style="font-family:var(--font-mono);font-size:11px;">+3</span>
+            <span style="color:var(--text2);">RSVP to meeting</span><span style="font-family:var(--font-mono);font-size:11px;">+2</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;">
-            <span style="color:var(--text2);">Attended meeting</span><span style="font-family:var(--font-mono);font-size:11px;">+10</span>
+            <span style="color:var(--text2);">Attended meeting</span><span style="font-family:var(--font-mono);font-size:11px;">+5</span>
           </div>
         </div>
       </div>
@@ -1064,7 +1071,7 @@ const BADGES = {
   topReader:  { emoji: '🏆', label: 'Top Reader' },
 };
 
-const POINTS = { thought: 2, passage: 5, question: 2, rsvp: 3, attended: 10, passageLike: 1 };
+const POINTS = { thought: 1, passage: 5, question: 1, rsvp: 2, attended: 5, passageLike: 1 };
 
 const app     = initializeApp(firebaseConfig);
 const auth    = getAuth(app);
@@ -1341,7 +1348,7 @@ async function loadCurrentBook() {
         <div class="meeting-strip">
           <div class="meeting-strip-item">
             <span class="meeting-strip-label">Meeting</span>
-            <span class="meeting-strip-val">${b.meetingDate ? formatDate(b.meetingDate) : 'TBA'}</span>
+            <span class="meeting-strip-val">${b.meetingDate ? formatDate(b.meetingDate, b.timezone) : 'TBA'}</span>
           </div>
           ${b.meetingDate ? `
           <div class="meeting-strip-divider"></div>
@@ -1370,7 +1377,7 @@ async function loadCurrentBook() {
 
         ${hasRsvpd && b.zoomLink
           ? `<a href="${esc(b.zoomLink)}" target="_blank" class="btn-rsvp rsvpd" style="display:block;text-align:center;">✓ Join Zoom →</a>`
-          : `<button class="btn-rsvp ${hasRsvpd ? 'rsvpd' : ''}" onclick="handleRsvp('${bookDoc.id}')">${hasRsvpd ? "✓ You're in" : "RSVP — +3 pts"}</button>`
+          : `<button class="btn-rsvp ${hasRsvpd ? 'rsvpd' : ''}" onclick="handleRsvp('${bookDoc.id}')">${hasRsvpd ? "✓ You're in" : "RSVP — +2 pts"}</button>`
         }
 
         ${questions.length ? `
@@ -1440,7 +1447,7 @@ window.setPostType = (type) => {
   const ref = document.getElementById('passage-ref');
   ref.style.display = type === 'passage' ? 'block' : 'none';
   const hint = document.getElementById('compose-hint');
-  const hintMap = { thought: '+2 pts for posting', passage: '+5 pts for sharing a passage', question: '+2 pts for posting' };
+  const hintMap = { thought: '+1 pts for posting', passage: '+5 pts for sharing a passage', question: '+1 pts for posting' };
   hint.textContent = hintMap[type];
   const ta = document.getElementById('compose-text');
   const phMap = { thought: 'Share a thought about this month\'s book…', passage: 'Share a passage that stood out…', question: 'Ask the group a question…' };
@@ -2001,6 +2008,7 @@ window.adminSetBook = async () => {
   const coverUrl    = document.getElementById('a-book-cover').value.trim();
   const totalPages  = parseInt(document.getElementById('a-book-pages').value) || 0;
   const meetRaw     = document.getElementById('a-meeting-date').value;
+  const timezone    = document.getElementById('a-meeting-timezone').value;
   const zoomLink    = document.getElementById('a-zoom-link').value.trim();
   const recordingUrl = document.getElementById('a-recording-url').value.trim();
   const discussionQuestions = document.getElementById('a-discussion-questions').value.trim();
@@ -2011,11 +2019,41 @@ window.adminSetBook = async () => {
   }
   await addDoc(collection(db, 'bookclub_books'), {
     title, author, synopsis, coverUrl, zoomLink, recordingUrl, totalPages,
-    discussionQuestions, status: 'current',
+    discussionQuestions, timezone, status: 'current',
     rsvpCount: 0, rsvps: {}, progress: {},
     meetingDate: meetRaw ? new Date(meetRaw) : null,
     createdAt: serverTimestamp()
   });
+  toast('Book updated!', 'success');
+  loadCurrentBook();
+};
+
+window.adminUpdateBook = async () => {
+  const existing = await getDocs(query(collection(db, 'bookclub_books'), where('status','==','current'), limit(1)));
+  if (existing.empty) { toast('No current book to update.', 'error'); return; }
+  const docRef = doc(db, 'bookclub_books', existing.docs[0].id);
+  const title       = document.getElementById('a-book-title').value.trim();
+  const author      = document.getElementById('a-book-author').value.trim();
+  const synopsis    = document.getElementById('a-book-synopsis').value.trim();
+  const coverUrl    = document.getElementById('a-book-cover').value.trim();
+  const totalPages  = parseInt(document.getElementById('a-book-pages').value) || 0;
+  const meetRaw     = document.getElementById('a-meeting-date').value;
+  const timezone    = document.getElementById('a-meeting-timezone').value;
+  const zoomLink    = document.getElementById('a-zoom-link').value.trim();
+  const recordingUrl = document.getElementById('a-recording-url').value.trim();
+  const discussionQuestions = document.getElementById('a-discussion-questions').value.trim();
+  const updates = {};
+  if (title)    updates.title    = title;
+  if (author)   updates.author   = author;
+  if (synopsis) updates.synopsis = synopsis;
+  if (coverUrl) updates.coverUrl = coverUrl;
+  if (totalPages) updates.totalPages = totalPages;
+  if (zoomLink) updates.zoomLink = zoomLink;
+  if (recordingUrl) updates.recordingUrl = recordingUrl;
+  if (discussionQuestions) updates.discussionQuestions = discussionQuestions;
+  if (timezone) updates.timezone = timezone;
+  if (meetRaw)  updates.meetingDate = new Date(meetRaw);
+  await updateDoc(docRef, updates);
   toast('Book updated!', 'success');
   loadCurrentBook();
 };
@@ -2090,8 +2128,8 @@ window.adminPostRecap = async () => {
 };
 
 window.adminMarkAttended = async (uid) => {
-  await updateDoc(doc(db, 'bookclub_members', uid), { points: increment(10) });
-  toast('+10 pts awarded.', 'success');
+  await updateDoc(doc(db, 'bookclub_members', uid), { points: increment(5) });
+  toast('+5 pts awarded.', 'success');
 };
 
 async function loadAdminMemberList() {
@@ -2104,7 +2142,7 @@ async function loadAdminMemberList() {
       if (m.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) return '';
       return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1e1e1e;">
         <span style="font-family:var(--font-mono);font-size:10px;color:#c8c4be;">${esc(m.name || '—')}</span>
-        <button class="btn-admin" onclick="adminMarkAttended('${d.id}')" style="padding:4px 10px;font-size:8px;">+10 pts</button>
+        <button class="btn-admin" onclick="adminMarkAttended('${d.id}')" style="padding:4px 10px;font-size:8px;">+5 pts</button>
       </div>`;
     }).join('');
   } catch {}
@@ -2165,10 +2203,11 @@ function timeAgo(ts) {
   if (s < 86400) return Math.floor(s/3600) + 'h ago';
   return Math.floor(s/86400) + 'd ago';
 }
-function formatDate(ts) {
+function formatDate(ts, timezone) {
   try {
     const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    const base = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+    return timezone ? `${base} ${timezone}` : base;
   } catch { return ''; }
 }
 function formatDateShort(ts) {

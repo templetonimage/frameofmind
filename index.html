@@ -6,9 +6,8 @@
   <title>Frame of Mind Club — An Exclusive Business Book Club for Creative Professionals</title>
   <meta name="description" content="Frame of Mind Club — An exclusive monthly business book club for creative professionals, photographers, and visual storytellers." />
   <meta name="theme-color" content="#FAFAF8" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon.svg" />
-  <link rel="apple-touch-icon" href="favicon.svg" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
@@ -643,7 +642,7 @@
 <div id="auth-overlay">
   <div class="auth-card">
     <button class="auth-close" onclick="closeAuth()">✕</button>
-    <div class="auth-card-logo"><strong>Templeton</strong> <span class="gold">Book Club</span></div>
+    <div class="auth-card-logo"><strong>Frame of Mind</strong> <span class="gold">Club</span></div>
     <div class="auth-sub">Free membership · Read together</div>
     <!-- Login -->
     <div id="auth-login">
@@ -660,7 +659,7 @@
 <!-- TOPNAV -->
 <nav class="topnav">
   <a href="https://frameofmindclub.com/" class="topnav-logo">
-    <strong>Templeton</strong>
+    <strong>Frame of Mind</strong>
     <span class="club">Book Club</span>
   </a>
   <div class="topnav-right">
@@ -687,7 +686,7 @@
 <!-- HERO -->
 <section class="hero">
   <div>
-    <div class="hero-eyebrow fade-up">Frame of Mind Club</div>
+    <div class="hero-eyebrow fade-up">Business Book Club</div>
     <h1 class="hero-title fade-up-1">Read <em>more.</em><br>Think deeper.</h1>
     <p class="hero-body fade-up-2">A monthly book club for photographers, videographers, and creative solopreneurs who believe great reading makes you sharper at everything — including your business. One book. Monthly discussion guides. A live Zoom. Every month.</p>
     <div class="hero-actions fade-up-3">
@@ -783,21 +782,21 @@
       </div>
     </div>
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
-      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+2</div>
+      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+1</div>
       <div>
         <div style="font-weight:500;font-size:14px;margin-bottom:3px;">Post a Thought or Question</div>
         <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Share a reaction, reflection, or open a question to the group. Every post counts.</div>
       </div>
     </div>
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
-      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+3</div>
+      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+2</div>
       <div>
         <div style="font-weight:500;font-size:14px;margin-bottom:3px;">RSVP to the Meeting</div>
         <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Commit to showing up. Points awarded when you RSVP inside the member platform.</div>
       </div>
     </div>
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
-      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+10</div>
+      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+5</div>
       <div>
         <div style="font-weight:500;font-size:14px;margin-bottom:3px;">Attend the Zoom</div>
         <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Show up live. The biggest single points award goes to members who actually attend.</div>
@@ -890,9 +889,17 @@
         <input class="field-input" id="admin-book-cover" placeholder="https://…" />
         <label class="field-label">Meeting Date & Time</label>
         <input class="field-input" type="datetime-local" id="admin-meeting-date" />
+        <label class="field-label">Meeting Timezone</label>
+        <select class="field-input" id="admin-meeting-timezone">
+          <option value="ET">ET — Eastern Time</option>
+          <option value="CT">CT — Central Time</option>
+          <option value="MT">MT — Mountain Time</option>
+          <option value="PT">PT — Pacific Time</option>
+        </select>
         <label class="field-label">Zoom Link</label>
         <input class="field-input" id="admin-zoom-link" placeholder="https://zoom.us/j/…" />
         <button class="btn-admin-gold" onclick="adminSetCurrentBook()">Set as Current Book</button>
+        <button class="btn-admin-gold" onclick="adminUpdateCurrentBook()" style="margin-top:6px;background:#555;">Update Current Book (no archive)</button>
       </div>
 
       <!-- Vote Candidates -->
@@ -925,7 +932,7 @@
 <!-- FOOTER -->
 <div class="footer-outer">
 <footer>
-  <a href="https://frameofmindclub.com/" class="footer-logo">Templeton <span class="gold">Book Club</span></a>
+  <a href="https://frameofmindclub.com/" class="footer-logo">Frame of Mind <span class="gold">Club</span></a>
   <div class="footer-links">
     <a href="https://natetempleton.com" class="footer-link" target="_blank">Nate Templeton</a>
     <a href="privacy.html" class="footer-link">Privacy Policy</a>
@@ -1147,7 +1154,7 @@ function renderHeroBook(b) {
 function renderCurrentBook(b) {
   const rsvpCount = b.rsvpCount || 0;
   const hasRsvpd  = b.rsvps && currentUser && b.rsvps[currentUser.uid];
-  const meetStr   = b.meetingDate ? formatMeetingDate(b.meetingDate) : 'TBA';
+  const meetStr   = b.meetingDate ? formatMeetingDate(b.meetingDate, b.timezone) : 'TBA';
   const coverHtml = b.coverUrl
     ? `<img src="${esc(b.coverUrl)}" alt="${esc(b.title)}" onerror="this.parentElement.innerHTML='<span>${esc(b.title)}</span>'">`
     : `<span>${esc(b.title || '')}</span>`;
@@ -1182,10 +1189,11 @@ function renderCurrentBook(b) {
     </div>`;
 }
 
-function formatMeetingDate(ts) {
+function formatMeetingDate(ts, timezone) {
   try {
     const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    const base = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    return timezone ? `${base} ${timezone}` : base;
   } catch { return 'TBA'; }
 }
 
@@ -1436,6 +1444,7 @@ window.adminSetCurrentBook = async () => {
   const synopsis = document.getElementById('admin-book-synopsis').value.trim();
   const coverUrl = document.getElementById('admin-book-cover').value.trim();
   const meetRaw  = document.getElementById('admin-meeting-date').value;
+  const timezone = document.getElementById('admin-meeting-timezone').value;
   const zoomLink = document.getElementById('admin-zoom-link').value.trim();
   if (!title) { toast('Title is required.', 'error'); return; }
 
@@ -1446,7 +1455,7 @@ window.adminSetCurrentBook = async () => {
   }
   // Set new current book
   await addDoc(collection(db, 'bookclub_books'), {
-    title, author, synopsis, coverUrl, zoomLink,
+    title, author, synopsis, coverUrl, zoomLink, timezone,
     status: 'current', rsvpCount: 0, rsvps: {},
     meetingDate: meetRaw ? new Date(meetRaw) : null,
     createdAt: serverTimestamp()
@@ -1454,6 +1463,30 @@ window.adminSetCurrentBook = async () => {
   toast('Current book updated!', 'success');
   loadCurrentBook();
   loadHistory();
+};
+
+window.adminUpdateCurrentBook = async () => {
+  const existing = await getDocs(query(collection(db, 'bookclub_books'), where('status', '==', 'current'), limit(1)));
+  if (existing.empty) { toast('No current book to update.', 'error'); return; }
+  const docRef = doc(db, 'bookclub_books', existing.docs[0].id);
+  const title    = document.getElementById('admin-book-title').value.trim();
+  const author   = document.getElementById('admin-book-author').value.trim();
+  const synopsis = document.getElementById('admin-book-synopsis').value.trim();
+  const coverUrl = document.getElementById('admin-book-cover').value.trim();
+  const meetRaw  = document.getElementById('admin-meeting-date').value;
+  const timezone = document.getElementById('admin-meeting-timezone').value;
+  const zoomLink = document.getElementById('admin-zoom-link').value.trim();
+  const updates = {};
+  if (title)    updates.title    = title;
+  if (author)   updates.author   = author;
+  if (synopsis) updates.synopsis = synopsis;
+  if (coverUrl) updates.coverUrl = coverUrl;
+  if (zoomLink) updates.zoomLink = zoomLink;
+  if (timezone) updates.timezone = timezone;
+  if (meetRaw)  updates.meetingDate = new Date(meetRaw);
+  await updateDoc(docRef, updates);
+  toast('Book updated!', 'success');
+  loadCurrentBook();
 };
 
 _adminCandidates = [];

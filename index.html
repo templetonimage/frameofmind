@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Templeton Book Club — An Exclusive Business Book Club for Creative Professionals</title>
-  <meta name="description" content="Templeton Book Club — An exclusive monthly business book club for creative professionals, photographers, and visual storytellers." />
+  <title>Frame of Mind Club — An Exclusive Business Book Club for Creative Professionals</title>
+  <meta name="description" content="Frame of Mind Club — An exclusive monthly business book club for creative professionals, photographers, and visual storytellers." />
   <meta name="theme-color" content="#FAFAF8" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.svg" />
@@ -659,7 +659,7 @@
 
 <!-- TOPNAV -->
 <nav class="topnav">
-  <a href="https://natetempleton.com/bookclub/" class="topnav-logo">
+  <a href="https://frameofmindclub.com/" class="topnav-logo">
     <strong>Templeton</strong>
     <span class="club">Book Club</span>
   </a>
@@ -687,7 +687,7 @@
 <!-- HERO -->
 <section class="hero">
   <div>
-    <div class="hero-eyebrow fade-up">Templeton Book Club</div>
+    <div class="hero-eyebrow fade-up">Frame of Mind Club</div>
     <h1 class="hero-title fade-up-1">Read <em>more.</em><br>Think deeper.</h1>
     <p class="hero-body fade-up-2">A monthly book club for photographers, videographers, and creative solopreneurs who believe great reading makes you sharper at everything — including your business. One book. Monthly discussion guides. A live Zoom. Every month.</p>
     <div class="hero-actions fade-up-3">
@@ -783,7 +783,7 @@
       </div>
     </div>
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
-      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+1</div>
+      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+2</div>
       <div>
         <div style="font-weight:500;font-size:14px;margin-bottom:3px;">Post a Thought or Question</div>
         <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Share a reaction, reflection, or open a question to the group. Every post counts.</div>
@@ -836,7 +836,7 @@
 <section class="section" id="join" style="text-align:center;max-width:600px;margin:0 auto;padding:80px 32px;">
   <div class="section-eyebrow" style="justify-content:center;">Membership</div>
   <h2 class="section-title" style="margin-bottom:12px;">Invite <em>Only</em></h2>
-  <p style="font-size:16px;font-weight:300;color:var(--text2);line-height:1.7;margin-bottom:36px;">The Templeton Book Club is a small, intentional community. Membership is by invitation. If you'd like to join, leave your email and Nate will reach out.</p>
+  <p style="font-size:16px;font-weight:300;color:var(--text2);line-height:1.7;margin-bottom:36px;">The Frame of Mind Club is a small, intentional community. Membership is by invitation. If you'd like to join, leave your email and Nate will reach out.</p>
   <button class="btn-primary" style="padding:14px 32px;" onclick="openInviteModal()">Request an Invite</button>
 </section>
 
@@ -925,7 +925,7 @@
 <!-- FOOTER -->
 <div class="footer-outer">
 <footer>
-  <a href="https://natetempleton.com/bookclub/" class="footer-logo">Templeton <span class="gold">Book Club</span></a>
+  <a href="https://frameofmindclub.com/" class="footer-logo">Templeton <span class="gold">Book Club</span></a>
   <div class="footer-links">
     <a href="https://natetempleton.com" class="footer-link" target="_blank">Nate Templeton</a>
     <a href="privacy.html" class="footer-link">Privacy Policy</a>
@@ -949,12 +949,12 @@ import { getFirestore, doc, getDoc, setDoc, updateDoc, addDoc, deleteDoc,
 
 // ── CONFIG — Replace with your new Firebase project config ──
 const firebaseConfig = {
-    apiKey: "AIzaSyCRU_qm3EdRNynCzHc4kdByU9Pp6A6ehMk",
-    authDomain: "templeton-bookclub.firebaseapp.com",
-    projectId: "templeton-bookclub",
-    storageBucket: "templeton-bookclub.firebasestorage.app",
-    messagingSenderId: "487783989047",
-    appId: "1:487783989047:web:164bb0305081feda0f24b2",
+    apiKey: "AIzaSyBmNJiFjQnDwltZKQB9rer-XLpaxERqiHg",
+    authDomain: "frame-of-mind-club.firebaseapp.com",
+    projectId: "frame-of-mind-club",
+    storageBucket: "frame-of-mind-club.firebasestorage.app",
+    messagingSenderId: "712218619090",
+    appId: "1:712218619090:web:e0e2983fe4eaaf43dd910b",
 };
 
 const ADMIN_EMAIL = "nate@templetonimage.com";
@@ -1016,7 +1016,7 @@ window.handleSignup = async () => {
       name, email, joinedAt: serverTimestamp()
     });
     closeAuth();
-    toast('Welcome to Templeton Book Club!', 'success');
+    toast('Welcome to Frame of Mind Club!', 'success');
   } catch(e) {
     errEl.textContent = friendlyError(e.code);
     errEl.style.display = 'block';
@@ -1092,7 +1092,6 @@ onAuthStateChanged(auth, async (user) => {
 // BOOT
 // ══════════════════════════════════════════
 async function boot() {
-  loadCurrentBook();
   loadHistory();
   loadStats();
 }
@@ -1120,14 +1119,12 @@ async function loadCurrentBook() {
     }
     loadDiscussion(currentBookId);
   } catch(e) {
-    console.error('[loadCurrentBook] error:', e);
-    if (el) el.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Coming Soon</div><div class="empty-desc">The first book will be announced shortly.</div></div>`;
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Coming Soon</div><div class="empty-desc">The first book will be announced shortly.</div></div>`;
   }
 }
 
 function renderNoCurrentBook() {
-  const el = document.getElementById('current-book-content');
-  if (el) el.innerHTML = `
+  document.getElementById('current-book-content').innerHTML = `
     <div class="empty-state">
       <div class="empty-icon">📚</div>
       <div class="empty-title">No book set yet</div>
@@ -1155,8 +1152,7 @@ function renderCurrentBook(b) {
     ? `<img src="${esc(b.coverUrl)}" alt="${esc(b.title)}" onerror="this.parentElement.innerHTML='<span>${esc(b.title)}</span>'">`
     : `<span>${esc(b.title || '')}</span>`;
 
-  const cbEl = document.getElementById('current-book-content');
-  if (cbEl) cbEl.innerHTML = `
+  document.getElementById('current-book-content').innerHTML = `
     <div class="current-book-grid">
       <div class="current-book-cover">${coverHtml}</div>
       <div>

@@ -1418,12 +1418,10 @@ async function loadHistory() {
 // ══════════════════════════════════════════
 async function loadStats() {
   try {
-    const [membersSnap, booksSnap, cmtSnap] = await Promise.allSettled([
-      getCountFromServer(collection(db, 'members')),
+    const [booksSnap, cmtSnap] = await Promise.allSettled([
       getDocs(query(collection(db, 'bookclub_books'))),
       currentBookId ? getCountFromServer(collection(db, 'bookclub_comments', currentBookId, 'comments')) : Promise.resolve(null)
     ]);
-    if (membersSnap.status === 'fulfilled') document.getElementById('stat-members').textContent = membersSnap.value.data().count;
     if (booksSnap.status === 'fulfilled')   document.getElementById('stat-books').textContent   = booksSnap.value.size;
     if (cmtSnap.status === 'fulfilled' && cmtSnap.value) document.getElementById('stat-comments').textContent = cmtSnap.value.data().count;
   } catch {}

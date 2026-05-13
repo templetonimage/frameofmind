@@ -1119,7 +1119,7 @@ async function loadCurrentBook() {
     const bookDoc = snap.docs[0];
     currentBookId = bookDoc.id;
     const b = bookDoc.data();
-    renderCurrentBook(b);
+    if (document.getElementById('current-book-content')) renderCurrentBook(b);
     renderHeroBook(b);
     if (b.meetingDate) {
       _meetingDate = b.meetingDate.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
@@ -1127,19 +1127,22 @@ async function loadCurrentBook() {
     }
     loadDiscussion(currentBookId);
   } catch(e) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Coming Soon</div><div class="empty-desc">The first book will be announced shortly.</div></div>`;
+    if (el) el.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Coming Soon</div><div class="empty-desc">The first book will be announced shortly.</div></div>`;
   }
 }
 
 function renderNoCurrentBook() {
-  document.getElementById('current-book-content').innerHTML = `
+  const el = document.getElementById('current-book-content');
+  if (el) el.innerHTML = `
     <div class="empty-state">
       <div class="empty-icon">📚</div>
       <div class="empty-title">No book set yet</div>
       <div class="empty-desc">Check back soon — Nate will announce the first pick.</div>
     </div>`;
-  document.getElementById('hero-title').textContent = 'Coming soon';
-  document.getElementById('hero-author').textContent = '';
+  const titleEl = document.getElementById('hero-title');
+  const authorEl = document.getElementById('hero-author');
+  if (titleEl) titleEl.textContent = 'Coming soon';
+  if (authorEl) authorEl.textContent = '';
 }
 
 function renderHeroBook(b) {

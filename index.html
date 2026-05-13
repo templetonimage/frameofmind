@@ -725,6 +725,7 @@
           <div class="countdown-sep">:</div>
           <div class="countdown-unit"><div class="countdown-num" id="cd-mins">—</div><div class="countdown-unit-lbl">Mins</div></div>
         </div>
+        <div id="countdown-tz" style="font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-top:6px;"></div>
       </div>
     </div>
   </div>
@@ -1123,8 +1124,9 @@ async function loadCurrentBook() {
     renderHeroBook(b);
     if (b.meetingDate) {
       _meetingDate = b.meetingDate.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
-      startCountdown(_meetingDate);
+      startCountdown(_meetingDate, b.timezone);
     }
+    populateAdminForm(b);
     loadDiscussion(currentBookId);
   } catch(e) {
     if (el) el.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Coming Soon</div><div class="empty-desc">The first book will be announced shortly.</div></div>`;
@@ -1221,7 +1223,9 @@ window.handleRsvp = async (bookId) => {
 // ══════════════════════════════════════════
 // COUNTDOWN
 // ══════════════════════════════════════════
-function startCountdown(targetDate) {
+function startCountdown(targetDate, timezone) {
+  const tzEl = document.getElementById('countdown-tz');
+  if (tzEl && timezone) tzEl.textContent = timezone;
   function tick() {
     const now  = Date.now();
     const diff = targetDate - now;
@@ -1240,6 +1244,28 @@ function startCountdown(targetDate) {
   }
   tick();
   setInterval(tick, 30000);
+}
+
+// ══════════════════════════════════════════
+// ADMIN PRE-POPULATE
+// ══════════════════════════════════════════
+function populateAdminForm(b) {
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+  set('admin-book-title',    b.title    || '');
+  set('admin-book-author',   b.author   || '');
+  set('admin-book-synopsis', b.synopsis || '');
+  set('admin-book-cover',    b.coverUrl || '');
+  set('admin-zoom-link',     b.zoomLink || '');
+  if (b.meetingDate) {
+    const d = b.meetingDate.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
+    // datetime-local expects "YYYY-MM-DDTHH:MM"
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    set('admin-meeting-date', local);
+  }
+  if (b.timezone) {
+    const tzSel = document.getElementById('admin-meeting-timezone');
+    if (tzSel) tzSel.value = b.timezone;
+  }
 }
 
 // ══════════════════════════════════════════

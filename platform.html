@@ -673,6 +673,22 @@
     .admin-textarea { width:100%; padding:9px 12px; border:1px solid #2a2a2a; border-radius:var(--radius-sm); font-family:var(--font-ui); font-size:13px; font-weight:300; background:#161616; color:#F0EDE8; outline:none; transition:border-color .2s; margin-bottom:8px; resize:vertical; min-height:72px; line-height:1.55; }
     .admin-textarea:focus { border-color:var(--gold-dim); }
     .admin-section { padding-top:14px; border-top:1px solid #1e1e1e; margin-top:6px; }
+    /* ── RANKING ── */
+    .rank-row {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; margin-bottom: 10px; transition: border-color .15s;
+    }
+    .rank-row.me { border-color: var(--gold); background: var(--gold-bg); }
+    .rank-num { font-family: var(--font-display); font-size: 22px; font-weight: 600; color: var(--muted); width: 32px; text-align: center; flex-shrink: 0; }
+    .rank-num.top3 { color: var(--gold); }
+    .rank-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--gold-bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: var(--gold); overflow: hidden; flex-shrink: 0; }
+    .rank-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .rank-info { flex: 1; min-width: 0; }
+    .rank-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rank-badges { font-size: 12px; margin-top: 2px; }
+    .rank-pts { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--gold); flex-shrink: 0; }
+    .rank-pts-lbl { font-family: var(--font-mono); font-size: 8px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; text-align: right; }
   </style>
 </head>
 <body>
@@ -813,6 +829,17 @@
         <div id="date-vote-content">
           <div class="loading-inline"><div class="spinner"></div> Loading…</div>
         </div>
+      </div>
+    </div>
+
+    <!-- RANKING -->
+    <div class="page" id="page-ranking">
+      <div class="page-header">
+        <h1 class="page-title">The <em>Leaderboard</em></h1>
+        <p class="page-subtitle">Top readers this season</p>
+      </div>
+      <div id="ranking-list" style="padding:0 4px;">
+        <div class="loading-inline"><div class="spinner"></div> Loading…</div>
       </div>
     </div>
 
@@ -1020,6 +1047,10 @@
     <button class="nav-item" id="nav-vote" onclick="navTo('vote')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
       Vote
+    </button>
+    <button class="nav-item" id="nav-ranking" onclick="navTo('ranking')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Ranking
     </button>
     <button class="nav-item" id="nav-members" onclick="navTo('members')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -1231,13 +1262,14 @@ function bootApp() {
 // ══════════════════════════════════════════
 // NAV
 // ══════════════════════════════════════════
-const PAGES = ['home','feed','vote','members','profile'];
+const PAGES = ['home','feed','vote','ranking','members','profile'];
 window.navTo = (p) => {
   PAGES.forEach(id => {
     document.getElementById('page-' + id)?.classList.toggle('active', id === p);
     document.getElementById('nav-' + id)?.classList.toggle('active', id === p);
   });
   document.getElementById('app-scroll').scrollTop = 0;
+  if (p === 'ranking') loadRanking();
 };
 
 // ══════════════════════════════════════════
@@ -1310,7 +1342,6 @@ async function loadCurrentBook() {
     const pct = totalPages > 0 ? Math.min(100, Math.round((myProgress / totalPages) * 100)) : 0;
     if (b.meetingDate) {
       _meetingDate = b.meetingDate.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
-      startCountdown(_meetingDate);
     }
     const coverHtml = b.coverUrl
       ? `<img src="${esc(b.coverUrl)}" alt="" onerror="this.parentElement.innerHTML='<span>${esc(b.title)}</span>'">`
@@ -1387,6 +1418,8 @@ async function loadCurrentBook() {
         </div>` : ''}
       </div>`;
 
+    if (_meetingDate) startCountdown(_meetingDate);
+    populateAdminForm(b);
     loadLatestRecap();
   } catch(e) {
     document.getElementById('home-book-card').innerHTML = '';
@@ -1743,6 +1776,41 @@ window.submitDateVote = async () => {
 // ══════════════════════════════════════════
 // MEMBERS DIRECTORY
 // ══════════════════════════════════════════
+// ══════════════════════════════════════════
+// RANKING
+// ══════════════════════════════════════════
+async function loadRanking() {
+  const el = document.getElementById('ranking-list');
+  if (!el) return;
+  try {
+    const snap = await getDocs(query(collection(db, 'bookclub_members'), orderBy('points', 'desc')));
+    if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">No rankings yet</div></div>'; return; }
+    const medals = ['🥇','🥈','🥉'];
+    el.innerHTML = snap.docs.map((d, i) => {
+      const m = d.data();
+      const isMe = currentUser && d.id === currentUser.uid;
+      const avatarHtml = m.photoURL
+        ? `<img src="${esc(m.photoURL)}" alt="" onerror="this.parentElement.textContent='${initials(m.name)}'">`
+        : initials(m.name);
+      const badgeStr = (m.badges || []).map(b => { const bd = BADGES[b]; return bd ? bd.emoji : ''; }).join(' ');
+      return `<div class="rank-row${isMe ? ' me' : ''}">
+        <div class="rank-num${i < 3 ? ' top3' : ''}">${i < 3 ? medals[i] : i + 1}</div>
+        <div class="rank-avatar">${avatarHtml}</div>
+        <div class="rank-info">
+          <div class="rank-name">${esc(m.name || 'Member')}${isMe ? ' <span style="font-family:var(--font-mono);font-size:9px;color:var(--gold);"> YOU</span>' : ''}</div>
+          <div class="rank-badges">${badgeStr}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="rank-pts">${m.points || 0}</div>
+          <div class="rank-pts-lbl">pts</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Could not load rankings</div></div>';
+  }
+}
+
 async function loadMembers() {
   const el = document.getElementById('members-grid');
   try {
@@ -2229,18 +2297,25 @@ function friendlyError(code) {
   return map[code] || 'Something went wrong. Please try again.';
 }
 
-// ── PLACEHOLDER BOOK PREFILL (admin only — remove after first book is set) ──
-function prefillPlaceholderBook() {
-  const fields = {
-    'a-book-title':    'Building a StoryBrand',
-    'a-book-author':   'Donald Miller',
-    'a-book-synopsis': 'Most companies waste enormous amounts of money on marketing because they never stop to clarify their message. Donald Miller\'s seven-part StoryBrand framework cuts through the noise — positioning your customer as the hero and your brand as the guide that helps them win. A practical, repeatable system for writing copy, building websites, and growing a business by saying less, more clearly.',
-    'a-book-cover':    'https://books.google.com/books/content?id=2h7FDQAAQBAJ&printsec=frontcover&img=1&zoom=2&edge=curl&source=gbs_api',
-    'a-book-pages':    '240',
-  };
-  for (const [id, val] of Object.entries(fields)) {
-    const el = document.getElementById(id);
-    if (el && !el.value) el.value = val;
+// ── ADMIN FORM PRE-POPULATE FROM CURRENT BOOK ──
+function populateAdminForm(b) {
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+  set('a-book-title',    b.title    || '');
+  set('a-book-author',   b.author   || '');
+  set('a-book-synopsis', b.synopsis || '');
+  set('a-book-cover',    b.coverUrl || '');
+  set('a-book-pages',    b.totalPages || '');
+  set('a-zoom-link',     b.zoomLink || '');
+  set('a-recording-url', b.recordingUrl || '');
+  set('a-discussion-questions', b.discussionQuestions || '');
+  if (b.meetingDate) {
+    const d = b.meetingDate.toDate ? b.meetingDate.toDate() : new Date(b.meetingDate);
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    set('a-meeting-date', local);
+  }
+  if (b.timezone) {
+    const tzSel = document.getElementById('a-meeting-timezone');
+    if (tzSel) tzSel.value = b.timezone;
   }
 }
 

@@ -139,6 +139,7 @@
       display: flex; align-items: center; gap: 8px;
     }
     .topnav-logo:hover { opacity: 0.75; }
+    .topnav-logo strong { font-weight: 700; }
     .topnav-logo .gold { color: var(--gold); }
     .topnav-logo-img { height: 32px; width: auto; display: block; }
     .topnav-right { display: flex; align-items: center; gap: 10px; }
@@ -701,7 +702,7 @@
 <!-- AUTH GATE -->
 <div id="auth-gate">
   <div class="auth-gate-card">
-    <div class="gate-logo">Frame of Mind <span class="gold">Book Club</span></div>
+    <div class="gate-logo"><strong>Frame of Mind</strong> <span class="gold">Book Club</span></div>
     <div class="gate-sub">Members Only</div>
 
     <!-- Login view -->
@@ -747,7 +748,7 @@
 <!-- APP -->
 <div id="app">
   <nav class="topnav">
-    <a class="topnav-logo" href="https://frameofmindclub.com" onclick="sessionStorage.setItem(&apos;skipPlatformRedirect&apos;,&apos;true&apos;)"><img src="logo.png" alt="" class="topnav-logo-img" />Frame of Mind</a>
+    <a class="topnav-logo" href="https://frameofmindclub.com" onclick="sessionStorage.setItem(&apos;skipPlatformRedirect&apos;,&apos;true&apos;)"><img src="logo.png" alt="" class="topnav-logo-img" /><strong>Frame of Mind</strong></a>
     <div class="topnav-right">
       <span class="topnav-points" id="topnav-points"></span>
       <div class="topnav-avatar" id="topnav-avatar" onclick="navTo('profile')">—</div>
@@ -842,6 +843,42 @@
       </div>
       <div id="ranking-list" style="padding:0 4px;">
         <div class="loading-inline"><div class="spinner"></div> Loading…</div>
+      </div>
+
+      <div class="section-label" style="margin-top:32px;">How to Earn Points</div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+5</div>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);">Share a Passage</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Quote the book and apply it to your business</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+5</div>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);">Attend the Zoom</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Show up live each month</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+3</div>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);">Finish the Book</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Log 100% reading progress</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+2</div>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);">Reply to a Post</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Jump into the conversation</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+2</div>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);">RSVP to the Meeting</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Commit to showing up</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+1</div>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);">Post a Thought or Question</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Share a reflection or ask the group</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+1</div>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);">Cast Your Vote</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Vote on the next book or meeting date</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;">
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+1</div>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);">Receive a Like</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Each like on your passage earns a bonus point</div></div>
+        </div>
       </div>
     </div>
 
@@ -1102,6 +1139,7 @@ const BADGES = {
   annotator:  { emoji: '✍️', label: 'Annotator' },
   onARoll:    { emoji: '🔥', label: 'On a Roll' },
   topReader:  { emoji: '🏆', label: 'Top Reader' },
+  finishLine: { emoji: '🎯', label: 'Finish Line' },
 };
 
 const POINTS = { thought: 1, passage: 5, question: 1, rsvp: 2, attended: 5, passageLike: 1 };
@@ -1432,7 +1470,20 @@ window.updateProgress = async (bookId, totalPages) => {
   const val = parseInt(document.getElementById('progress-input').value);
   if (!val || val < 1 || val > totalPages) { toast('Enter a valid page number.', 'error'); return; }
   await updateDoc(doc(db, 'bookclub_books', bookId), { [`progress.${currentUser.uid}`]: val });
-  toast('Progress saved!', 'success');
+  const pct = totalPages > 0 ? Math.round((val / totalPages) * 100) : 0;
+  if (pct >= 100 && !currentUser._progressPointsAwarded) {
+    currentUser._progressPointsAwarded = true;
+    await awardPoints(3);
+    toast('Book complete! +3 pts 🎯', 'success');
+    if (!currentUser.badges.includes('finishLine')) {
+      const newBadges = [...currentUser.badges, 'finishLine'];
+      currentUser.badges = newBadges;
+      await updateDoc(doc(db, 'bookclub_members', currentUser.uid), { badges: newBadges });
+      renderProfile(); renderHomeBadges();
+    }
+  } else {
+    toast('Progress saved!', 'success');
+  }
   loadCurrentBook();
 };
 
@@ -1629,6 +1680,7 @@ window.submitReply = async (postId) => {
   const replies = snap.data().replies || [];
   replies.push({ id: 'r_' + Date.now(), uid: currentUser.uid, authorName: currentUser.name, photoURL: currentUser.photoURL || null, body, ts: Date.now() });
   await updateDoc(postRef, { replies });
+  await awardPoints(2);
   input.value = '';
 };
 
@@ -1721,7 +1773,8 @@ window.selectBookVote = (id) => {
 window.submitBookVote = async () => {
   if (!_selectedBookVote) { toast('Select a book first.', 'error'); return; }
   await updateDoc(doc(db, 'bookclub_vote', 'current'), { [`votes.${currentUser.uid}`]: _selectedBookVote });
-  toast('Vote cast!', 'success');
+  await awardPoints(1);
+  toast('Vote cast! +1 pt', 'success');
   loadBookVote();
 };
 
@@ -1771,7 +1824,8 @@ window.selectDateVote = (i) => {
 window.submitDateVote = async () => {
   if (_selectedDateVote === null) { toast('Select a date first.', 'error'); return; }
   await updateDoc(doc(db, 'bookclub_meeting_vote', 'current'), { [`votes.${currentUser.uid}`]: _selectedDateVote });
-  toast('Preference saved!', 'success');
+  await awardPoints(1);
+  toast('Preference saved! +1 pt', 'success');
   loadDateVote();
 };
 
@@ -1785,22 +1839,39 @@ async function loadRanking() {
   const el = document.getElementById('ranking-list');
   if (!el) return;
   try {
-    const snap = await getDocs(query(collection(db, 'bookclub_members'), orderBy('points', 'desc')));
-    if (snap.empty) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">No rankings yet</div></div>'; return; }
+    const [membersSnap, bookSnap] = await Promise.all([
+      getDocs(query(collection(db, 'bookclub_members'), orderBy('points', 'desc'))),
+      getDocs(query(collection(db, 'bookclub_books'), where('status','==','current'), limit(1)))
+    ]);
+    if (membersSnap.empty) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><div class="empty-title">No rankings yet</div></div>'; return; }
+    const bookData   = bookSnap.empty ? null : bookSnap.docs[0].data();
+    const totalPages = bookData?.totalPages || 0;
+    const progress   = bookData?.progress   || {};
     const medals = ['🥇','🥈','🥉'];
-    el.innerHTML = snap.docs.map((d, i) => {
+    el.innerHTML = membersSnap.docs.map((d, i) => {
       const m = d.data();
       const isMe = currentUser && d.id === currentUser.uid;
       const avatarHtml = m.photoURL
         ? `<img src="${esc(m.photoURL)}" alt="" onerror="this.parentElement.textContent='${initials(m.name)}'">`
         : initials(m.name);
       const badgeStr = (m.badges || []).map(b => { const bd = BADGES[b]; return bd ? bd.emoji : ''; }).join(' ');
+      const userPages = progress[d.id] || 0;
+      const pct = totalPages > 0 ? Math.min(100, Math.round((userPages / totalPages) * 100)) : null;
+      const progressHtml = pct !== null
+        ? `<div style="margin-top:4px;display:flex;align-items:center;gap:6px;">
+            <div style="flex:1;height:3px;background:var(--bg2);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:2px;transition:width .4s;"></div>
+            </div>
+            <span style="font-family:var(--font-mono);font-size:9px;color:var(--muted);flex-shrink:0;">${pct}%</span>
+          </div>`
+        : '';
       return `<div class="rank-row${isMe ? ' me' : ''}">
         <div class="rank-num${i < 3 ? ' top3' : ''}">${i < 3 ? medals[i] : i + 1}</div>
         <div class="rank-avatar">${avatarHtml}</div>
         <div class="rank-info">
           <div class="rank-name">${esc(m.name || 'Member')}${isMe ? ' <span style="font-family:var(--font-mono);font-size:9px;color:var(--gold);"> YOU</span>' : ''}</div>
           <div class="rank-badges">${badgeStr}</div>
+          ${progressHtml}
         </div>
         <div style="text-align:right;">
           <div class="rank-pts">${m.points || 0}</div>

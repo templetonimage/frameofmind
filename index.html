@@ -511,9 +511,11 @@
       .topnav { padding: 0 16px; }
       .topnav-logo { font-size: 17px; }
       .nav-link { display: none; }
-      .hero { grid-template-columns: 1fr; gap: 40px; padding: 48px 16px 40px; }
+      .hero { grid-template-columns: 1fr; gap: 32px; padding: 32px 16px 40px; }
       .hero-title { font-size: 52px; }
       .hero-book-card { max-width: 360px; margin: 0 auto; }
+      .hero-book-wrap { order: -1; }
+      .hero > div:first-child { order: 1; }
       .section { padding: 48px 16px; }
       .section-title { font-size: 36px; }
       .current-book-grid { grid-template-columns: 1fr; }
@@ -522,7 +524,10 @@
       .hero-stats { gap: 20px; }
       #admin-panel { padding: 32px 16px; }
       footer { flex-direction: column; padding: 24px 16px; }
+      #how .grid-3col, #points .grid-3col { grid-template-columns: 1fr; }
     }
+
+    .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); }
 
     /* ── FADE IN ANIMATION ── */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
@@ -688,7 +693,7 @@
   <div>
     <div class="hero-eyebrow fade-up">Business Book Club</div>
     <h1 class="hero-title fade-up-1">A sharper mind.<br>A better <em>business.</em></h1>
-    <p class="hero-body fade-up-2">A monthly book club for photographers, videographers, and creative solopreneurs who know that shifting your frame of mind is what separates good from great. One book. Monthly discussion guides. A live Zoom. Every month.</p>
+    <p class="hero-body fade-up-2">A monthly book club for photographers, videographers, and creative solopreneurs who know that shifting your frame of mind can separate good from great. One book. Monthly discussion guides. A live Zoom. Every month.</p>
     <div class="hero-actions fade-up-3">
       <button class="btn-primary" id="hero-join-btn" onclick="openInviteModal()">Request an Invite</button>
       <a href="#current" class="btn-secondary">This Month's Book</a>
@@ -736,8 +741,8 @@
 <!-- HOW IT WORKS -->
 <section class="section" id="how">
   <div class="section-eyebrow">How It Works</div>
-  <h2 class="section-title">One book. One month. One <em>community.</em></h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;margin-top:8px;">
+  <h2 class="section-title">One book. One month.<br><em>One community.</em></h2>
+  <div class="grid-3col" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px;">
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;">
       <div style="font-size:28px;margin-bottom:12px;">📖</div>
       <div style="font-family:var(--font-display);font-size:22px;font-weight:600;margin-bottom:8px;">Read Together</div>
@@ -763,6 +768,37 @@
       <div style="font-family:var(--font-display);font-size:22px;font-weight:600;margin-bottom:8px;">Monthly Zoom</div>
       <div style="font-size:14px;font-weight:300;color:var(--text2);line-height:1.65;">Live discussion with Nate and the group. One hour, once a month. Real conversation, no fluff. Recordings available after each session.</div>
     </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;">
+      <div style="font-size:28px;margin-bottom:12px;">🏆</div>
+      <div style="font-family:var(--font-display);font-size:22px;font-weight:600;margin-bottom:8px;">Earn Points & Climb</div>
+      <div style="font-size:14px;font-weight:300;color:var(--text2);line-height:1.65;">Every action earns points — posting, replying, finishing the book, showing up. Watch your rank climb on the member leaderboard.</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;">
+      <div style="font-size:28px;margin-bottom:12px;">📚</div>
+      <div style="font-family:var(--font-display);font-size:22px;font-weight:600;margin-bottom:8px;">Access Resources</div>
+      <div style="font-size:14px;font-weight:300;color:var(--text2);line-height:1.65;">Curated links, tools, and reading material hand-picked by Nate to complement each month's book and help you apply what you learn.</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;">
+      <div style="font-size:28px;margin-bottom:12px;">👥</div>
+      <div style="font-family:var(--font-display);font-size:22px;font-weight:600;margin-bottom:8px;">Member Directory</div>
+      <div style="font-size:14px;font-weight:300;color:var(--text2);line-height:1.65;">Browse the full member directory inside the platform. Connect with photographers, videographers, and creatives who are reading the same books.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- QUARTERLY GIVEAWAY -->
+<section class="section" id="giveaway" style="text-align:center;max-width:640px;margin:0 auto;">
+  <div class="section-eyebrow" style="justify-content:center;">Member Perks</div>
+  <h2 class="section-title" style="margin-bottom:12px;">Quarterly Book <em>Giveaway</em></h2>
+  <p style="font-size:15px;font-weight:300;color:var(--text2);line-height:1.7;margin-bottom:36px;">Every three months, one winner is randomly drawn from the top 3 readers on the leaderboard and gifted the next book. Stay engaged, earn points, climb the ranks, and you could be next.</p>
+  <div style="display:inline-flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--gold);border-radius:var(--radius);padding:18px 28px;">
+    <div style="font-size:32px;">🎁</div>
+    <div style="text-align:left;">
+      <div style="font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--text);margin-bottom:2px;">Free book, every quarter</div>
+      <div style="font-size:13px;font-weight:300;color:var(--text3);">Random draw from the top 3 readers by points</div>
+    </div>
   </div>
 </section>
 
@@ -770,16 +806,16 @@
 
 <!-- POINTS & LEADERBOARD -->
 <section class="section" id="points">
-  <div class="section-eyebrow">Membership Perks</div>
+  <div class="section-eyebrow">How to Earn Points</div>
   <h2 class="section-title">Read. Share. <em>Climb.</em></h2>
   <p style="font-size:15px;font-weight:300;color:var(--text2);line-height:1.7;margin-bottom:40px;max-width:520px;">Every time you engage in the member platform, you earn points. Share a passage that moved you, ask a question, RSVP to a meeting, show up on Zoom — it all adds up. The more you give to the community, the higher you climb.</p>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:40px;">
+  <div class="grid-3col" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px;">
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
       <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+5</div>
       <div>
         <div style="font-weight:500;font-size:14px;margin-bottom:3px;">Share a Passage</div>
-        <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Quote something from the book that stood out. Earn an extra point every time someone likes it.</div>
+        <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Quote something from the book that stood out and how it can apply to your business. Earn an extra point every time someone likes it.</div>
       </div>
     </div>
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
@@ -787,6 +823,13 @@
       <div>
         <div style="font-weight:500;font-size:14px;margin-bottom:3px;">Post a Thought or Question</div>
         <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Share a reaction, reflection, or open a question to the group. Every post counts.</div>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
+      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+2</div>
+      <div>
+        <div style="font-weight:500;font-size:14px;margin-bottom:3px;">Reply to a Post</div>
+        <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Jump into the conversation. Every reply you leave earns points and keeps the discussion alive.</div>
       </div>
     </div>
     <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
@@ -803,6 +846,20 @@
         <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Show up live. The biggest single points award goes to members who actually attend.</div>
       </div>
     </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
+      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+3</div>
+      <div>
+        <div style="font-weight:500;font-size:14px;margin-bottom:3px;">Finish the Book</div>
+        <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Log 100% reading progress in the platform. Earn a bonus and unlock the Finish Line badge.</div>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;display:flex;align-items:flex-start;gap:16px;">
+      <div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0;">+1</div>
+      <div>
+        <div style="font-weight:500;font-size:14px;margin-bottom:3px;">Cast Your Vote</div>
+        <div style="font-size:13px;font-weight:300;color:var(--text3);line-height:1.55;">Vote on the next book or preferred meeting date. Your opinion shapes the club.</div>
+      </div>
+    </div>
   </div>
 
   <!-- Badge preview -->
@@ -814,6 +871,7 @@
       <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid var(--border);border-radius:20px;font-size:13px;font-weight:300;">✍️ Annotator</div>
       <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid var(--border);border-radius:20px;font-size:13px;font-weight:300;">🔥 On a Roll</div>
       <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid var(--border);border-radius:20px;font-size:13px;font-weight:300;">🏆 Top Reader</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid var(--border);border-radius:20px;font-size:13px;font-weight:300;">🎯 Finish Line</div>
     </div>
   </div>
 

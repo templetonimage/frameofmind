@@ -63,15 +63,16 @@
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid rgba(255,255,255,0.08);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 32px; height: 60px;
+      padding: 0 48px; height: 64px;
     }
     .topnav-logo {
-      font-family: var(--font-display); font-weight: 300; font-size: 20px;
+      font-family: var(--font-display); font-weight: 300; font-size: 22px;
       letter-spacing: 0.02em; color: #F0EDE8;
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 8px;
     }
     .topnav-logo strong { font-weight: 700; }
     .topnav-logo .club { color: var(--gold); }
+    .topnav-logo-img { height: 32px; width: auto; display: block; }
     .topnav-right { display: flex; align-items: center; gap: 12px; }
     .nav-link {
       font-family: var(--font-mono); font-size: 10px; font-weight: 400;
@@ -659,8 +660,8 @@
 <!-- TOPNAV -->
 <nav class="topnav">
   <a href="https://frameofmindclub.com/" class="topnav-logo">
+    <img src="logo.png" alt="" class="topnav-logo-img" />
     <strong>Frame of Mind</strong>
-    <span class="club">Book Club</span>
   </a>
   <div class="topnav-right">
     <a href="#points" class="nav-link">Earn Points</a>

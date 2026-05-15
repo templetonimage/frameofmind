@@ -724,7 +724,7 @@
       </div>
     </div>
   </div>
-  <div class="hero-book-wrap fade-up-2">
+  <div class="hero-book-wrap fade-up-2" id="current">
     <div class="hero-book-card">
       <div class="hero-book-label">📖 Now Reading</div>
       <div class="hero-book-cover" id="hero-cover">
@@ -1674,7 +1674,7 @@ window.openInviteModal = () => {
   document.getElementById('invite-message').value = '';
   document.getElementById('invite-submit-btn').disabled    = false;
   document.getElementById('invite-submit-btn').textContent = 'Send Request';
-  card.style.animation = 'none'; card.offsetHeight; card.style.animation = '';
+  if (card) { card.style.animation = 'none'; card.offsetHeight; card.style.animation = ''; }
   document.getElementById('invite-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 };

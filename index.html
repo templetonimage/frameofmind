@@ -1185,7 +1185,7 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('auth-btn-wrap').style.display = 'block';
     document.getElementById('user-nav').style.display = 'none';
     document.getElementById('hero-join-btn').textContent = 'Join Free';
-    document.getElementById('hero-join-btn').onclick = () => openAuth('signup');
+    document.getElementById('hero-join-btn').onclick = () => openInviteModal();
     document.getElementById('admin-panel').style.display = 'none';
     loadVote();
     if (currentBookId) loadDiscussion(currentBookId);

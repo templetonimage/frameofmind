@@ -9,6 +9,20 @@
   <meta name="theme-color" content="#FAFAF8" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="Frame of Mind Club — Member Platform" />
+  <meta property="og:description" content="A monthly book club for photographers, videographers, and creative solopreneurs. One book. Monthly discussions. A live Zoom. Every month." />
+  <meta property="og:image" content="https://frameofmindclub.com/og-image.png" />
+  <meta property="og:image:width" content="1344" />
+  <meta property="og:image:height" content="840" />
+  <meta property="og:url" content="https://frameofmindclub.com/platform.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Frame of Mind Club" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Frame of Mind Club — Member Platform" />
+  <meta name="twitter:description" content="A monthly book club for photographers, videographers, and creative solopreneurs. One book. Monthly discussions. A live Zoom. Every month." />
+  <meta name="twitter:image" content="https://frameofmindclub.com/og-image.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
@@ -966,7 +980,14 @@
 
             <!-- Col 2: Invites + Vote + Premium Content -->
             <div>
-              <div class="admin-col-title">Invite Links</div>
+              <div class="admin-section">
+                <div class="admin-col-title">Invite Requests</div>
+                <button class="btn-admin" onclick="adminLoadInviteRequests()" style="width:100%;margin-bottom:8px;">Load Requests</button>
+                <div id="admin-invite-requests" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;"></div>
+              </div>
+
+              <div class="admin-section">
+                <div class="admin-col-title">Invite Links</div>
               <button class="btn-admin-gold" onclick="adminGenerateInvite()" style="width:100%;margin-bottom:6px;">Generate Invite Link</button>
               <div class="invite-link-box" id="invite-link-box"></div>
 
@@ -2196,6 +2217,49 @@ window.adminUpdateBook = async () => {
   await updateDoc(docRef, updates);
   toast('Book updated!', 'success');
   loadCurrentBook();
+};
+
+window.adminLoadInviteRequests = async () => {
+  const el = document.getElementById('admin-invite-requests');
+  el.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);">Loading…</div>';
+  try {
+    const snap = await getDocs(query(collection(db, 'bookclub_invite_requests'), orderBy('ts', 'desc'), limit(20)));
+    if (snap.empty) { el.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);">No requests yet.</div>'; return; }
+    el.innerHTML = snap.docs.map(d => {
+      const r = d.data();
+      const referralBtn = r.referrer && !r.referralAwarded
+        ? `<button class="btn-admin-gold" onclick="adminAwardReferral('${d.id}','${esc(r.referrer)}')" style="margin-top:6px;width:100%;font-size:9px;padding:4px 8px;">+5 pts — Award Referral to "${esc(r.referrer)}"</button>`
+        : r.referralAwarded ? `<div style="font-size:9px;color:var(--muted);margin-top:4px;font-family:var(--font-mono);">✓ Referral awarded</div>` : '';
+      return `<div style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;padding:10px 12px;">
+        <div style="font-size:11px;font-weight:500;color:#F0EDE8;margin-bottom:2px;">${esc(r.name || '—')} <span style="font-family:var(--font-mono);font-size:9px;color:var(--muted);">${esc(r.email || '')}</span></div>
+        ${r.message ? `<div style="font-size:10px;color:var(--muted);margin-bottom:4px;">${esc(r.message)}</div>` : ''}
+        ${r.heard ? `<div style="font-size:9px;font-family:var(--font-mono);color:var(--muted);">Heard via: ${esc(r.heard)}</div>` : ''}
+        ${r.referrer ? `<div style="font-size:9px;font-family:var(--font-mono);color:var(--gold);">Referred by: ${esc(r.referrer)}</div>` : ''}
+        ${referralBtn}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);">Error loading requests.</div>';
+  }
+};
+
+window.adminAwardReferral = async (requestId, referrerQuery) => {
+  if (!confirm(`Award +5 referral points to "${referrerQuery}"?`)) return;
+  try {
+    const q = referrerQuery.includes('@')
+      ? query(collection(db, 'bookclub_members'), where('email', '==', referrerQuery), limit(1))
+      : query(collection(db, 'bookclub_members'), where('name', '==', referrerQuery), limit(1));
+    const snap = await getDocs(q);
+    if (snap.empty) { toast(`No member found matching "${referrerQuery}". Check name/email.`, 'error'); return; }
+    const memberRef = doc(db, 'bookclub_members', snap.docs[0].id);
+    const memberData = snap.docs[0].data();
+    await updateDoc(memberRef, { points: (memberData.points || 0) + 5 });
+    await updateDoc(doc(db, 'bookclub_invite_requests', requestId), { referralAwarded: true });
+    toast(`+5 pts awarded to ${memberData.name}!`, 'success');
+    adminLoadInviteRequests();
+  } catch(e) {
+    toast('Error awarding points. Try again.', 'error');
+  }
 };
 
 window.adminGenerateInvite = async () => {

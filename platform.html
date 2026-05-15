@@ -1037,6 +1037,60 @@
             </div>
           </div>
         </div>
+
+        <!-- POINTS LEDGER PANEL -->
+        <div class="admin-bar" id="admin-ledger-panel" style="margin-top:12px;">
+          <div class="admin-bar-title" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;" onclick="toggleLedgerPanel()">
+            ⬡ Points Ledger
+            <span id="ledger-toggle-icon" style="font-size:11px;font-family:var(--font-mono);color:var(--muted);">▼ OPEN</span>
+          </div>
+          <div id="ledger-panel-body" style="display:none;padding-top:14px;">
+
+            <!-- Filters -->
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end;">
+              <div style="flex:1;min-width:120px;">
+                <div class="admin-label">Member</div>
+                <select class="admin-input" id="ledger-filter-member" style="background:#161616;color:#F0EDE8;" onchange="renderLedger()"><option value="">All</option></select>
+              </div>
+              <div style="flex:1;min-width:120px;">
+                <div class="admin-label">Action</div>
+                <select class="admin-input" id="ledger-filter-action" style="background:#161616;color:#F0EDE8;" onchange="renderLedger()">
+                  <option value="">All Actions</option>
+                  <option>Share a Passage</option><option>Post a Thought</option><option>Post a Question</option>
+                  <option>Reply to a Post</option><option>Cast a Vote</option><option>RSVP to Meeting</option>
+                  <option>Attend the Zoom</option><option>Finish the Book</option><option>Receive a Like</option>
+                  <option>Referral Bonus</option><option>Manual</option>
+                </select>
+              </div>
+              <button class="btn-admin-gold" onclick="loadLedger()" style="white-space:nowrap;padding:8px 14px;">↻ Load</button>
+            </div>
+
+            <!-- Add Manual Entry -->
+            <div style="background:#111;border:1px solid #2a2a2a;border-radius:6px;padding:12px;margin-bottom:12px;">
+              <div class="admin-col-title" style="margin-bottom:8px;">+ Add Manual Entry</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                <div><div class="admin-label">Member</div><select class="admin-input" id="ledger-add-member" style="background:#161616;color:#F0EDE8;"></select></div>
+                <div><div class="admin-label">Action</div>
+                  <select class="admin-input" id="ledger-add-action" style="background:#161616;color:#F0EDE8;">
+                    <option>Share a Passage</option><option>Post a Thought</option><option>Post a Question</option>
+                    <option>Reply to a Post</option><option>Cast a Vote</option><option>RSVP to Meeting</option>
+                    <option>Attend the Zoom</option><option>Finish the Book</option><option>Receive a Like</option>
+                    <option>Referral Bonus</option><option>Manual</option>
+                  </select>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:80px 1fr;gap:8px;margin-bottom:8px;">
+                <div><div class="admin-label">Points</div><input class="admin-input" id="ledger-add-pts" type="number" placeholder="e.g. 5" /></div>
+                <div><div class="admin-label">Note</div><input class="admin-input" id="ledger-add-note" placeholder="Reason…" /></div>
+              </div>
+              <button class="btn-admin-gold" onclick="ledgerAddEntry()" style="width:100%;">Add Entry &amp; Award Points</button>
+            </div>
+
+            <button class="btn-admin" onclick="ledgerMigrateLegacy()" style="width:100%;margin-bottom:12px;font-size:9px;">Seed Legacy Balances (run once)</button>
+            <div id="ledger-table" style="font-size:10px;font-family:var(--font-mono);"></div>
+            <div id="ledger-summary" style="font-size:9px;color:var(--muted);margin-top:8px;text-align:right;"></div>
+          </div>
+        </div>
       </div>
 
       <!-- Profile hero -->
@@ -1493,7 +1547,7 @@ window.updateProgress = async (bookId, totalPages) => {
   const pct = totalPages > 0 ? Math.round((val / totalPages) * 100) : 0;
   if (pct >= 100 && !currentUser._progressPointsAwarded) {
     currentUser._progressPointsAwarded = true;
-    await awardPoints(3);
+    await awardPoints(3, 'Finish the Book', 'Logged 100% reading progress');
     toast('Book complete! +3 pts 🎯', 'success');
     if (!currentUser.badges.includes('finishLine')) {
       const newBadges = [...currentUser.badges, 'finishLine'];
@@ -1572,7 +1626,8 @@ window.submitPost = async () => {
     ts: serverTimestamp(), likes: 0, likedBy: {},
     bookId: currentBookId || null, replies: []
   });
-  await awardPoints(pts);
+  const actionLabel = _postType === 'passage' ? 'Share a Passage' : _postType === 'question' ? 'Post a Question' : 'Post a Thought';
+  await awardPoints(pts, actionLabel);
   await updateDoc(doc(db, 'bookclub_members', currentUser.uid), { postCount: increment(1) });
   currentUser.postCount++;
   checkBadges();
@@ -1682,12 +1737,26 @@ window.toggleLike = async (postId, alreadyLiked, postType, postAuthorUid) => {
   const r = doc(db, 'bookclub_feed', postId);
   if (alreadyLiked) {
     await updateDoc(r, { likes: increment(-1), [`likedBy.${currentUser.uid}`]: false });
-    if (postType === 'passage' && postAuthorUid !== currentUser.uid)
+    if (postType === 'passage' && postAuthorUid !== currentUser.uid) {
       await updateDoc(doc(db, 'bookclub_members', postAuthorUid), { points: increment(-1) });
+      const authorSnap = await getDoc(doc(db, 'bookclub_members', postAuthorUid));
+      await addDoc(collection(db, 'bookclub_points_ledger'), {
+        uid: postAuthorUid, memberName: authorSnap.data()?.name || postAuthorUid,
+        action: 'Receive a Like', points: -1, note: 'Like removed',
+        ts: serverTimestamp(), awardedBy: 'system'
+      });
+    }
   } else {
     await updateDoc(r, { likes: increment(1), [`likedBy.${currentUser.uid}`]: true });
-    if (postType === 'passage' && postAuthorUid !== currentUser.uid)
+    if (postType === 'passage' && postAuthorUid !== currentUser.uid) {
       await updateDoc(doc(db, 'bookclub_members', postAuthorUid), { points: increment(1) });
+      const authorSnap = await getDoc(doc(db, 'bookclub_members', postAuthorUid));
+      await addDoc(collection(db, 'bookclub_points_ledger'), {
+        uid: postAuthorUid, memberName: authorSnap.data()?.name || postAuthorUid,
+        action: 'Receive a Like', points: 1, note: `Liked by ${currentUser.name}`,
+        ts: serverTimestamp(), awardedBy: 'system'
+      });
+    }
   }
 };
 
@@ -1700,7 +1769,7 @@ window.submitReply = async (postId) => {
   const replies = snap.data().replies || [];
   replies.push({ id: 'r_' + Date.now(), uid: currentUser.uid, authorName: currentUser.name, photoURL: currentUser.photoURL || null, body, ts: Date.now() });
   await updateDoc(postRef, { replies });
-  await awardPoints(2);
+  await awardPoints(2, 'Reply to a Post');
   input.value = '';
 };
 
@@ -1793,7 +1862,7 @@ window.selectBookVote = (id) => {
 window.submitBookVote = async () => {
   if (!_selectedBookVote) { toast('Select a book first.', 'error'); return; }
   await updateDoc(doc(db, 'bookclub_vote', 'current'), { [`votes.${currentUser.uid}`]: _selectedBookVote });
-  await awardPoints(1);
+  await awardPoints(1, 'Cast a Vote', 'Book vote');
   toast('Vote cast! +1 pt', 'success');
   loadBookVote();
 };
@@ -1844,7 +1913,7 @@ window.selectDateVote = (i) => {
 window.submitDateVote = async () => {
   if (_selectedDateVote === null) { toast('Select a date first.', 'error'); return; }
   await updateDoc(doc(db, 'bookclub_meeting_vote', 'current'), { [`votes.${currentUser.uid}`]: _selectedDateVote });
-  await awardPoints(1);
+  await awardPoints(1, 'Cast a Vote', 'Meeting date vote');
   toast('Preference saved! +1 pt', 'success');
   loadDateVote();
 };
@@ -2139,12 +2208,27 @@ window.handleSignOut = async () => {
 // ══════════════════════════════════════════
 // POINTS + BADGES
 // ══════════════════════════════════════════
-async function awardPoints(pts) {
-  await updateDoc(doc(db, 'bookclub_members', currentUser.uid), { points: increment(pts) });
-  currentUser.points += pts;
-  renderTopNav();
-  document.getElementById('my-points').textContent    = currentUser.points;
-  document.getElementById('profile-points').textContent = currentUser.points;
+async function awardPoints(pts, action = 'Manual', note = '', targetUid = null) {
+  const uid = targetUid || currentUser.uid;
+  const memberName = targetUid ? null : currentUser.name;
+  await updateDoc(doc(db, 'bookclub_members', uid), { points: increment(pts) });
+  try {
+    await addDoc(collection(db, 'bookclub_points_ledger'), {
+      uid,
+      memberName: memberName || uid,
+      action,
+      points: pts,
+      note: note || '',
+      ts: serverTimestamp(),
+      awardedBy: currentUser ? currentUser.email : 'system'
+    });
+  } catch(e) { /* ledger write best-effort */ }
+  if (!targetUid) {
+    currentUser.points += pts;
+    renderTopNav();
+    document.getElementById('my-points').textContent     = currentUser.points;
+    document.getElementById('profile-points').textContent = currentUser.points;
+  }
 }
 
 async function checkBadges() {
@@ -2332,8 +2416,15 @@ window.adminPostRecap = async () => {
 };
 
 window.adminMarkAttended = async (uid) => {
-  await updateDoc(doc(db, 'bookclub_members', uid), { points: increment(5) });
-  toast('+5 pts awarded.', 'success');
+  const snap = await getDoc(doc(db, 'bookclub_members', uid));
+  const m = snap.data();
+  await updateDoc(doc(db, 'bookclub_members', uid), { points: increment(10) });
+  await addDoc(collection(db, 'bookclub_points_ledger'), {
+    uid, memberName: m.name || uid, action: 'Attend the Zoom',
+    points: 10, note: 'Admin marked attended',
+    ts: serverTimestamp(), awardedBy: currentUser.email
+  });
+  toast('+10 pts awarded.', 'success');
 };
 
 async function loadAdminMemberList() {
@@ -2458,6 +2549,173 @@ function populateAdminForm(b) {
 
 document.getElementById('gate-password').addEventListener('keydown', e => { if (e.key === 'Enter') handleGateLogin(); });
 document.getElementById('gate-signup-password').addEventListener('keydown', e => { if (e.key === 'Enter') handleGateSignup(); });
+
+// ══════════════════════════════════════════
+// RSVP HANDLER
+// ══════════════════════════════════════════
+window.handleRsvp = async (bookId) => {
+  const bookRef = doc(db, 'bookclub_books', bookId);
+  const snap    = await getDoc(bookRef);
+  const rsvps   = snap.data().rsvps || {};
+  if (rsvps[currentUser.uid]) { toast("You're already RSVP'd!", 'success'); return; }
+  await updateDoc(bookRef, { [`rsvps.${currentUser.uid}`]: true, rsvpCount: increment(1) });
+  await awardPoints(2, 'RSVP to Meeting');
+  toast("You're in! +2 pts", 'success');
+  loadCurrentBook();
+};
+
+// ══════════════════════════════════════════
+// POINTS LEDGER
+// ══════════════════════════════════════════
+let _ledgerEntries = [];
+let _ledgerMembers = [];
+
+window.toggleLedgerPanel = () => {
+  const body = document.getElementById('ledger-panel-body');
+  const icon = document.getElementById('ledger-toggle-icon');
+  const open = body.style.display === 'none';
+  body.style.display = open ? '' : 'none';
+  icon.textContent   = open ? '▲ CLOSE' : '▼ OPEN';
+  if (open && _ledgerEntries.length === 0) loadLedger();
+};
+
+window.loadLedger = async () => {
+  const tableEl = document.getElementById('ledger-table');
+  tableEl.innerHTML = '<div style="color:var(--muted);padding:12px 0;">Loading…</div>';
+  try {
+    const [entriesSnap, membersSnap] = await Promise.all([
+      getDocs(query(collection(db, 'bookclub_points_ledger'), orderBy('ts', 'desc'), limit(200))),
+      getDocs(query(collection(db, 'bookclub_members'), orderBy('name')))
+    ]);
+    _ledgerEntries = entriesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    _ledgerMembers = membersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Populate member dropdowns
+    const memberOpts = _ledgerMembers
+      .filter(m => m.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase())
+      .map(m => `<option value="${m.id}">${esc(m.name || m.email)}</option>`).join('');
+    document.getElementById('ledger-filter-member').innerHTML = '<option value="">All Members</option>' + memberOpts;
+    document.getElementById('ledger-add-member').innerHTML    = memberOpts;
+    renderLedger();
+  } catch(e) {
+    tableEl.innerHTML = `<div style="color:#f88;padding:12px 0;">Error loading ledger: ${e.message}</div>`;
+  }
+};
+
+window.renderLedger = () => {
+  const filterMember = document.getElementById('ledger-filter-member').value;
+  const filterAction = document.getElementById('ledger-filter-action').value;
+  const tableEl      = document.getElementById('ledger-table');
+  const summaryEl    = document.getElementById('ledger-summary');
+  let entries = _ledgerEntries;
+  if (filterMember) entries = entries.filter(e => e.uid === filterMember);
+  if (filterAction) entries = entries.filter(e => e.action === filterAction);
+  if (entries.length === 0) {
+    tableEl.innerHTML = '<div style="color:var(--muted);padding:12px 0;">No entries found.</div>';
+    summaryEl.textContent = '';
+    return;
+  }
+  const total = entries.reduce((s, e) => s + (e.points || 0), 0);
+  tableEl.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 40px 1fr 60px 60px;gap:4px 8px;padding-bottom:6px;border-bottom:1px solid #2a2a2a;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;">
+      <div>Member</div><div>Action</div><div>Pts</div><div>Note</div><div>Date</div><div>Edit</div>
+    </div>
+    ${entries.map(e => {
+      const d = e.ts?.toDate ? e.ts.toDate() : new Date();
+      const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const ptsColor = e.points > 0 ? 'var(--gold)' : '#f88';
+      return `<div style="display:grid;grid-template-columns:1fr 1fr 40px 1fr 60px 60px;gap:4px 8px;padding:6px 0;border-bottom:1px solid #1a1a1a;align-items:center;" id="ledger-row-${e.id}">
+        <div style="color:#c8c4be;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(e.memberName || '—')}</div>
+        <div style="color:#c8c4be;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(e.action || '—')}</div>
+        <div style="color:${ptsColor};font-weight:600;">${e.points > 0 ? '+' : ''}${e.points}</div>
+        <div style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(e.note || '—')}</div>
+        <div style="color:var(--muted);">${dateStr}</div>
+        <div style="display:flex;gap:4px;">
+          <button class="btn-admin" onclick="ledgerEditEntry('${e.id}')" style="padding:2px 6px;font-size:8px;">✎</button>
+          <button class="btn-admin" onclick="ledgerDeleteEntry('${e.id}','${e.uid}',${e.points})" style="padding:2px 6px;font-size:8px;color:#f88;">✕</button>
+        </div>
+      </div>`;
+    }).join('')}`;
+  summaryEl.textContent = `${entries.length} entries · ${total > 0 ? '+' : ''}${total} pts total`;
+};
+
+window.ledgerAddEntry = async () => {
+  const memberSel = document.getElementById('ledger-add-member');
+  const uid       = memberSel.value;
+  const memberName = memberSel.options[memberSel.selectedIndex]?.text || uid;
+  const action    = document.getElementById('ledger-add-action').value;
+  const pts       = parseInt(document.getElementById('ledger-add-pts').value);
+  const note      = document.getElementById('ledger-add-note').value.trim();
+  if (!uid || isNaN(pts)) { toast('Select a member and enter points.', 'error'); return; }
+  await updateDoc(doc(db, 'bookclub_members', uid), { points: increment(pts) });
+  await addDoc(collection(db, 'bookclub_points_ledger'), {
+    uid, memberName, action, points: pts, note,
+    ts: serverTimestamp(), awardedBy: currentUser.email
+  });
+  document.getElementById('ledger-add-pts').value  = '';
+  document.getElementById('ledger-add-note').value = '';
+  toast(`Entry added: ${pts > 0 ? '+' : ''}${pts} pts to ${memberName}`, 'success');
+  loadLedger();
+};
+
+window.ledgerEditEntry = (entryId) => {
+  const entry = _ledgerEntries.find(e => e.id === entryId);
+  if (!entry) return;
+  const row = document.getElementById(`ledger-row-${entryId}`);
+  const oldPts  = entry.points;
+  const oldNote = entry.note || '';
+  row.innerHTML = `
+    <div style="color:#c8c4be;">${esc(entry.memberName || '—')}</div>
+    <div style="color:#c8c4be;">${esc(entry.action || '—')}</div>
+    <div><input class="admin-input" id="edit-pts-${entryId}" type="number" value="${oldPts}" style="width:48px;padding:2px 4px;font-size:10px;" /></div>
+    <div><input class="admin-input" id="edit-note-${entryId}" value="${esc(oldNote)}" style="padding:2px 4px;font-size:10px;" /></div>
+    <div style="grid-column:span 2;display:flex;gap:4px;margin-top:2px;">
+      <button class="btn-admin-gold" onclick="ledgerSaveEdit('${entryId}','${entry.uid}',${oldPts})" style="padding:2px 8px;font-size:8px;">Save</button>
+      <button class="btn-admin" onclick="renderLedger()" style="padding:2px 8px;font-size:8px;">Cancel</button>
+    </div>`;
+};
+
+window.ledgerSaveEdit = async (entryId, uid, oldPts) => {
+  const newPts  = parseInt(document.getElementById(`edit-pts-${entryId}`).value);
+  const newNote = document.getElementById(`edit-note-${entryId}`).value.trim();
+  if (isNaN(newPts)) { toast('Invalid points value.', 'error'); return; }
+  const diff = newPts - oldPts;
+  await updateDoc(doc(db, 'bookclub_points_ledger', entryId), { points: newPts, note: newNote });
+  if (diff !== 0) await updateDoc(doc(db, 'bookclub_members', uid), { points: increment(diff) });
+  const idx = _ledgerEntries.findIndex(e => e.id === entryId);
+  if (idx > -1) { _ledgerEntries[idx].points = newPts; _ledgerEntries[idx].note = newNote; }
+  toast('Entry updated.', 'success');
+  renderLedger();
+};
+
+window.ledgerDeleteEntry = async (entryId, uid, pts) => {
+  if (!confirm(`Delete this entry and deduct ${pts} pts from member?`)) return;
+  await deleteDoc(doc(db, 'bookclub_points_ledger', entryId));
+  await updateDoc(doc(db, 'bookclub_members', uid), { points: increment(-pts) });
+  _ledgerEntries = _ledgerEntries.filter(e => e.id !== entryId);
+  toast('Entry deleted.', 'success');
+  renderLedger();
+};
+
+window.ledgerMigrateLegacy = async () => {
+  if (!confirm('Seed legacy balances for all members with points but no ledger entries? Run once only.')) return;
+  const membersSnap = await getDocs(collection(db, 'bookclub_members'));
+  let seeded = 0;
+  for (const d of membersSnap.docs) {
+    const m = d.data();
+    if (!m.points || m.points <= 0) continue;
+    const existing = await getDocs(query(collection(db, 'bookclub_points_ledger'), where('uid','==',d.id), limit(1)));
+    if (!existing.empty) continue;
+    await addDoc(collection(db, 'bookclub_points_ledger'), {
+      uid: d.id, memberName: m.name || d.id,
+      action: 'Manual', points: m.points,
+      note: 'Legacy balance — seeded on ledger creation',
+      ts: serverTimestamp(), awardedBy: 'system'
+    });
+    seeded++;
+  }
+  toast(`Seeded ${seeded} legacy balance${seeded !== 1 ? 's' : ''}.`, 'success');
+  loadLedger();
+};
 </script>
 </body>
 </html>

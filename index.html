@@ -228,6 +228,7 @@
       text-align: center;
     }
     .hero-book-cover img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+    .hero-book-content { display: contents; } /* desktop: children flow normally */
     .hero-book-title {
       font-family: var(--font-display); font-size: 26px; font-weight: 600;
       text-align: center; margin-bottom: 4px; line-height: 1.2;
@@ -530,16 +531,20 @@
       .hero-book-wrap { order: 2; margin-top: 28px; }
       .hero > div:first-child { order: 1; }
       .hero-book-card {
-        max-width: 100%; padding: 16px 16px;
-        display: flex; flex-direction: row; align-items: center; gap: 16px;
+        max-width: 100%; padding: 14px 16px;
+        display: flex; flex-direction: row; align-items: flex-start; gap: 14px;
       }
       .hero-book-card::before { display: none; }
       .hero-book-label { display: none; }
-      .hero-book-cover { max-width: 70px; min-width: 70px; margin: 0; flex-shrink: 0; }
+      .hero-book-cover {
+        width: 72px; min-width: 72px; max-width: 72px;
+        aspect-ratio: 2/3; margin: 0; flex-shrink: 0; overflow: visible;
+      }
+      .hero-book-content { display: flex; flex-direction: column; flex: 1; min-width: 0; }
       .hero-book-title { font-size: 15px; margin-bottom: 2px; text-align: left; }
       .hero-book-author { margin-bottom: 10px; font-size: 9px; text-align: left; }
       .meeting-countdown { padding: 10px 12px; }
-      .countdown-num { font-size: 22px; }
+      .countdown-num { font-size: 20px; }
       .section-title { font-size: 32px; }
       .current-book-grid { grid-template-columns: 1fr; }
       .current-book-cover { width: 140px; }
@@ -744,18 +749,20 @@
       <div class="hero-book-cover" id="hero-cover">
         <span>No book set yet</span>
       </div>
-      <div class="hero-book-title" id="hero-title">—</div>
-      <div class="hero-book-author" id="hero-author">—</div>
-      <div class="meeting-countdown" id="hero-countdown">
-        <div class="countdown-label">Next Meeting In</div>
-        <div class="countdown-timer" id="countdown-timer">
-          <div class="countdown-unit"><div class="countdown-num" id="cd-days">—</div><div class="countdown-unit-lbl">Days</div></div>
-          <div class="countdown-sep">:</div>
-          <div class="countdown-unit"><div class="countdown-num" id="cd-hours">—</div><div class="countdown-unit-lbl">Hours</div></div>
-          <div class="countdown-sep">:</div>
-          <div class="countdown-unit"><div class="countdown-num" id="cd-mins">—</div><div class="countdown-unit-lbl">Mins</div></div>
+      <div class="hero-book-content">
+        <div class="hero-book-title" id="hero-title">—</div>
+        <div class="hero-book-author" id="hero-author">—</div>
+        <div class="meeting-countdown" id="hero-countdown">
+          <div class="countdown-label">Next Meeting In</div>
+          <div class="countdown-timer" id="countdown-timer">
+            <div class="countdown-unit"><div class="countdown-num" id="cd-days">—</div><div class="countdown-unit-lbl">Days</div></div>
+            <div class="countdown-sep">:</div>
+            <div class="countdown-unit"><div class="countdown-num" id="cd-hours">—</div><div class="countdown-unit-lbl">Hours</div></div>
+            <div class="countdown-sep">:</div>
+            <div class="countdown-unit"><div class="countdown-num" id="cd-mins">—</div><div class="countdown-unit-lbl">Mins</div></div>
+          </div>
+          <div id="countdown-tz" style="font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-top:6px;"></div>
         </div>
-        <div id="countdown-tz" style="font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-top:6px;"></div>
       </div>
     </div>
   </div>

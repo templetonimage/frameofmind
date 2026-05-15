@@ -6,6 +6,20 @@
   <title>Frame of Mind Club — An Exclusive Business Book Club for Creative Professionals</title>
   <meta name="description" content="Frame of Mind Club — An exclusive monthly business book club for creative professionals, photographers, and visual storytellers." />
   <meta name="theme-color" content="#FAFAF8" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="Frame of Mind Club — Business Book Club for Creative Professionals" />
+  <meta property="og:description" content="A monthly book club for photographers, videographers, and creative solopreneurs. One book. Monthly discussions. A live Zoom. Every month." />
+  <meta property="og:image" content="https://frameofmindclub.com/og-image.png" />
+  <meta property="og:image:width" content="1344" />
+  <meta property="og:image:height" content="840" />
+  <meta property="og:url" content="https://frameofmindclub.com" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Frame of Mind Club" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Frame of Mind Club — Business Book Club for Creative Professionals" />
+  <meta name="twitter:description" content="A monthly book club for photographers, videographers, and creative solopreneurs. One book. Monthly discussions. A live Zoom. Every month." />
+  <meta name="twitter:image" content="https://frameofmindclub.com/og-image.png" />
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="apple-touch-icon" href="favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -928,6 +942,12 @@
       <label class="invite-label" for="invite-message">Message</label>
       <textarea class="invite-textarea" id="invite-message" name="message" placeholder="Tell us a bit about yourself and your work…"></textarea>
 
+      <label class="invite-label" for="invite-heard">How did you hear about us?</label>
+      <input class="invite-input" type="text" id="invite-heard" name="heard" placeholder="Instagram, a friend, Google…" />
+
+      <label class="invite-label" for="invite-referrer">Referred by <span style="font-weight:300;opacity:0.6;">(optional)</span></label>
+      <input class="invite-input" type="text" id="invite-referrer" name="referrer" placeholder="Name or email of who sent you" />
+
       <button class="btn-invite-submit" id="invite-submit-btn" onclick="handleInviteSubmit()">Send Request</button>
       <div class="invite-form-error" id="invite-form-error"></div>
     </div>
@@ -1672,6 +1692,8 @@ window.openInviteModal = () => {
   document.getElementById('invite-name').value    = '';
   document.getElementById('invite-email').value   = '';
   document.getElementById('invite-message').value = '';
+  document.getElementById('invite-heard').value   = '';
+  document.getElementById('invite-referrer').value = '';
   document.getElementById('invite-submit-btn').disabled    = false;
   document.getElementById('invite-submit-btn').textContent = 'Send Request';
   if (card) { card.style.animation = 'none'; card.offsetHeight; card.style.animation = ''; }
@@ -1687,11 +1709,13 @@ window.handleInviteOverlayClick = (e) => {
 };
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeInviteModal(); });
 window.handleInviteSubmit = async () => {
-  const name    = document.getElementById('invite-name').value.trim();
-  const email   = document.getElementById('invite-email').value.trim();
-  const message = document.getElementById('invite-message').value.trim();
-  const errEl   = document.getElementById('invite-form-error');
-  const btn     = document.getElementById('invite-submit-btn');
+  const name     = document.getElementById('invite-name').value.trim();
+  const email    = document.getElementById('invite-email').value.trim();
+  const message  = document.getElementById('invite-message').value.trim();
+  const heard    = document.getElementById('invite-heard').value.trim();
+  const referrer = document.getElementById('invite-referrer').value.trim();
+  const errEl    = document.getElementById('invite-form-error');
+  const btn      = document.getElementById('invite-submit-btn');
   if (!name || !email) {
     errEl.textContent = 'Please enter your name and email.';
     errEl.classList.add('visible'); return;
@@ -1702,9 +1726,15 @@ window.handleInviteSubmit = async () => {
     const res = await fetch('https://formspree.io/f/xlgakqyk', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ name, email, message })
+      body: JSON.stringify({ name, email, message, heard, referrer })
     });
     if (!res.ok) throw new Error();
+    try {
+      await addDoc(collection(db, 'bookclub_invite_requests'), {
+        name, email, message, heard, referrer,
+        ts: serverTimestamp(), referralAwarded: false
+      });
+    } catch(e) { /* Firestore write is best-effort */ }
     document.getElementById('invite-modal-form').style.display = 'none';
     document.getElementById('invite-modal-success').classList.add('visible');
   } catch {

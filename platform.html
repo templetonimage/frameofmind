@@ -851,7 +851,7 @@
           <div><div style="font-size:13px;font-weight:500;color:var(--text);">Share a Passage</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Quote the book and apply it to your business</div></div>
         </div>
         <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
-          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+5</div>
+          <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--gold);width:32px;flex-shrink:0;text-align:right;">+10</div>
           <div><div style="font-size:13px;font-weight:500;color:var(--text);">Attend the Zoom</div><div style="font-size:11px;font-weight:300;color:var(--muted);margin-top:1px;">Show up live each month</div></div>
         </div>
         <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
@@ -959,7 +959,7 @@
               </div>
 
               <div class="admin-section">
-                <div class="admin-col-title">Mark Attended (+5 pts)</div>
+                <div class="admin-col-title">Mark Attended (+10 pts)</div>
                 <div id="admin-member-list" style="max-height:200px;overflow-y:auto;"></div>
               </div>
             </div>
@@ -1061,7 +1061,7 @@
             <span style="color:var(--text2);">RSVP to meeting</span><span style="font-family:var(--font-mono);font-size:11px;">+2</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;">
-            <span style="color:var(--text2);">Attended meeting</span><span style="font-family:var(--font-mono);font-size:11px;">+5</span>
+            <span style="color:var(--text2);">Attended meeting</span><span style="font-family:var(--font-mono);font-size:11px;">+10</span>
           </div>
         </div>
       </div>
@@ -1141,7 +1141,7 @@ const BADGES = {
   finishLine: { emoji: '🎯', label: 'Finish Line' },
 };
 
-const POINTS = { thought: 1, passage: 5, question: 1, rsvp: 2, attended: 5, passageLike: 1 };
+const POINTS = { thought: 1, passage: 5, question: 1, rsvp: 2, attended: 10, passageLike: 1 };
 
 const app     = initializeApp(firebaseConfig);
 const auth    = getAuth(app);
@@ -2282,7 +2282,7 @@ async function loadAdminMemberList() {
       if (m.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) return '';
       return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1e1e1e;">
         <span style="font-family:var(--font-mono);font-size:10px;color:#c8c4be;">${esc(m.name || '—')}</span>
-        <button class="btn-admin" onclick="adminMarkAttended('${d.id}')" style="padding:4px 10px;font-size:8px;">+5 pts</button>
+        <button class="btn-admin" onclick="adminMarkAttended('${d.id}')" style="padding:4px 10px;font-size:8px;">+10 pts</button>
       </div>`;
     }).join('');
   } catch {}
